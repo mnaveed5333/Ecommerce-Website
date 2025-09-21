@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import jewelry from "/76237953771.png";
+import women from "/image (2).png";
+import men from "/8896469042.png";
+import{ 
   FiArrowRight, FiChevronLeft, FiChevronRight, FiStar, FiHeart, 
   FiAward, FiPause, FiPlay, FiZap, FiTrendingUp, 
   FiHeadphones, FiShield, FiGift, FiShoppingBag, FiTruck,
@@ -41,7 +44,7 @@ const Home = () => {
       cta: "Shop Men's",
       ctaLink: "/shop?category=men",
       bgGradient: "from-blue-600 via-sky-600 to-indigo-700",
-      image: "public/8896469042.png",
+      image: men,
       stats: { sold: "12K+", rating: "4.7", reviews: "3.2K" }
     },
     {
@@ -52,7 +55,7 @@ const Home = () => {
       cta: "Shop Women's",
       ctaLink: "/shop?category=women",
       bgGradient: "from-pink-600 via-rose-500 to-fuchsia-600",
-      image: "public/image (2).png",
+      image: women,
       stats: { sold: "15K+", rating: "4.9", reviews: "4.1K" }
     },
     {
@@ -63,7 +66,7 @@ const Home = () => {
       cta: "Shop Jewelry",
       ctaLink: "/shop?category=jewelry",
       bgGradient: "from-amber-500 via-yellow-500 to-orange-600",
-      image: "public/data/76237953771.png",
+      image: jewelry,
       stats: { sold: "7K+", rating: "4.8", reviews: "2.3K" }
     },
     
