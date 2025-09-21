@@ -1,0 +1,691 @@
+import React, { useState, useEffect, useRef } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  FiShoppingCart,
+  FiUser,
+  FiHeart,
+  FiSearch,
+  FiHome,
+  FiShoppingBag,
+  FiInfo,
+  FiMail,
+  FiLogOut,
+  FiPhone,
+  FiMapPin,
+  FiChevronDown
+} from 'react-icons/fi'
+import { HiOutlineShoppingBag } from 'react-icons/hi'
+import { useAuth } from '../../context/AuthContext'
+import { useCart } from '../../context/CartContext'
+import { useHeader } from '../../context/HeaderContext'
+
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [scrolled, setScrolled] = useState(false)
+  const [isAccountOpen, setIsAccountOpen] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+  const searchInputRef = useRef(null)
+  const accountBtnRef = useRef(null)
+  const accountDropdownRef = useRef(null)
+
+  const { user, logout } = useAuth()
+  const { getCartItemsCount } = useCart()
+  const { headerConfig } = useHeader()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const cartCount = typeof getCartItemsCount === 'function' ? getCartItemsCount() : 0
+
+  // Track window width for responsive behavior
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      setTimeout(() => searchInputRef.current.focus(), 80)
+    }
+  }, [isSearchOpen])
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        isAccountOpen &&
+        accountDropdownRef.current &&
+        !accountDropdownRef.current.contains(e.target) &&
+        accountBtnRef.current &&
+        !accountBtnRef.current.contains(e.target)
+      ) {
+        setIsAccountOpen(false)
+      }
+    }
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setIsAccountOpen(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    document.addEventListener('keyup', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+      document.removeEventListener('keyup', handleEscape)
+    }
+  }, [isAccountOpen])
+
+  const handleSearch = (e) => {
+    e?.preventDefault?.()
+    const q = searchQuery.trim()
+    if (q) {
+      navigate(`/shop?search=${encodeURIComponent(q)}`)
+      setSearchQuery('')
+      setIsMenuOpen(false)
+      setIsSearchOpen(false)
+    } else {
+      navigate('/shop')
+      setIsMenuOpen(false)
+      setIsSearchOpen(false)
+    }
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+    setIsMenuOpen(false)
+    setIsAccountOpen(false)
+  }
+
+  // Determine which elements to show based on screen width
+  const showFullNav = windowWidth >= 1024 // lg breakpoint
+  const showIconsOnly = windowWidth >= 475 && windowWidth < 1024 // xs to lg
+  const showMinimalUI = windowWidth < 475 // xs
+
+  // Motion variants
+  const navItem = {
+    hidden: { opacity: 0, y: -8 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.2, type: 'spring', stiffness: 200 } }
+  }
+  const navList = {
+    visible: { transition: { staggerChildren: 0.05 } }
+  }
+  const mobileMenuVariants = {
+    hidden: { x: '-100%', opacity: 0 },
+    visible: { x: '0%', opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 28 } },
+    exit: { x: '-100%', opacity: 0, transition: { duration: 0.2 } }
+  }
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: -10, scale: 0.95 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.15, type: 'spring', stiffness: 200 } },
+    exit: { opacity: 0, y: -10, scale: 0.95, transition: { duration: 0.1 } }
+  }
+  const searchOverlayVariants = {
+    hidden: { opacity: 0, scale: 0.98 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.2, type: 'spring', stiffness: 200 } },
+    exit: { opacity: 0, scale: 0.98, transition: { duration: 0.15 } }
+  }
+
+  // Custom 9-dot grid icon for menu
+  const GridIcon = ({ size = 24, className }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="4" cy="4" r="1.5" />
+      <circle cx="12" cy="4" r="1.5" />
+      <circle cx="20" cy="4" r="1.5" />
+      <circle cx="4" cy="12" r="1.5" />
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="20" cy="12" r="1.5" />
+      <circle cx="4" cy="20" r="1.5" />
+      <circle cx="12" cy="20" r="1.5" />
+      <circle cx="20" cy="20" r="1.5" />
+    </svg>
+  )
+
+  // Custom 9-dot grid styled as close icon
+  const GridCloseIcon = ({ size = 24, className }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="4" cy="4" r="1.5" />
+      <circle cx="12" cy="4" r="1.5" strokeOpacity="0.3" />
+      <circle cx="20" cy="4" r="1.5" />
+      <circle cx="4" cy="12" r="1.5" strokeOpacity="0.3" />
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="20" cy="12" r="1.5" strokeOpacity="0.3" />
+      <circle cx="4" cy="20" r="1.5" />
+      <circle cx="12" cy="20" r="1.5" strokeOpacity="0.3" />
+      <circle cx="20" cy="20" r="1.5" />
+      <line x1="3" y1="3" x2="21" y2="21" strokeWidth="2" />
+      <line x1="21" y1="3" x2="3" y2="21" strokeWidth="2" />
+    </svg>
+  )
+
+  return (
+    <>
+      {/* Top Contact Information Bar */}
+{headerConfig?.showTopBar && (
+  <div className="w-full bg-white text-black text-[10px] xs:text-xs sm:text-sm py-1.5 xs:py-2 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+    <div className="max-w-7xl mx-auto px-2 xs:px-3 sm:px-4 lg:px-8">
+      {/* Desktop/Tablet View - Always show full information */}
+      <div className="hidden sm:flex flex-row flex-wrap justify-between gap-1 xs:gap-2 sm:gap-4">
+        <motion.a
+          href={headerConfig?.contactInfo?.phone ? `tel:${headerConfig.contactInfo.phone}` : '#'}
+          className="flex items-center gap-1 xs:gap-2 group border border-transparent hover:border-blue-500 hover:bg-gray-50 transition-all duration-300 py-0.5 xs:py-1 px-1 xs:px-2 rounded-md"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.12 }}
+          aria-label="Call us"
+        >
+          <div className="bg-black p-1 xs:p-1.5 rounded-full group-hover:bg-black transition-colors">
+            <FiPhone className="text-white" size={14} />
+          </div>
+          <span className="font-medium group-hover:text-black truncate max-w-[140px] xs:max-w-[160px] sm:max-w-none">
+            {headerConfig.contactInfo.phone}
+          </span>
+        </motion.a>
+        <motion.a
+          href={headerConfig?.contactInfo?.email ? `mailto:${headerConfig.contactInfo.email}` : '#'}
+          className="flex items-center gap-1 xs:gap-2 group border border-transparent hover:border-blue-500 hover:bg-gray-50 transition-all duration-300 py-0.5 xs:py-1 px-1 xs:px-2 rounded-md"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.12 }}
+          aria-label="Email us"
+        >
+          <div className="bg-black p-1 xs:p-1.5 rounded-full group-hover:bg-black transition-colors">
+            <FiMail className="text-white" size={14} />
+          </div>
+          <span className="font-medium group-hover:text-black truncate max-w-[160px] xs:max-w-[180px] sm:max-w-none">
+            {headerConfig.contactInfo.email}
+          </span>
+        </motion.a>
+        <motion.a
+          href={
+            headerConfig?.contactInfo?.address
+              ? `https://www.google.com/maps/search/${encodeURIComponent(headerConfig.contactInfo.address)}`
+              : '#'
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 xs:gap-2 group border border-transparent hover:border-blue-500 hover:bg-gray-50 transition-all duration-300 py-0.5 xs:py-1 px-1 xs:px-2 rounded-md"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.12 }}
+          aria-label="Our address"
+        >
+          <div className="bg-black p-1 xs:p-1.5 rounded-full group-hover:bg-black transition-colors">
+            <FiMapPin className="text-white" size={14} />
+          </div>
+          <span className="font-medium group-hover:text-black truncate max-w-[180px] xs:max-w-[200px] sm:max-w-none">
+            {headerConfig.contactInfo.address}
+          </span>
+        </motion.a>
+      </div>
+      
+      {/* Mobile View - Icons only with tooltip on click */}
+      <div className="flex sm:hidden justify-center gap-4 xs:gap-6">
+        {/* Phone */}
+        <div className="relative group">
+          <motion.button
+            onClick={() => {
+              if (headerConfig?.contactInfo?.phone) {
+                window.location.href = `tel:${headerConfig.contactInfo.phone}`;
+              }
+            }}
+            className="p-1.5 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Call us"
+          >
+            <FiPhone size={16} />
+          </motion.button>
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">
+            {headerConfig.contactInfo.phone}
+          </div>
+        </div>
+        
+        {/* Email */}
+        <div className="relative group">
+          <motion.button
+            onClick={() => {
+              if (headerConfig?.contactInfo?.email) {
+                window.location.href = `mailto:${headerConfig.contactInfo.email}`;
+              }
+            }}
+            className="p-1.5 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Email us"
+          >
+            <FiMail size={16} />
+          </motion.button>
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap max-w-[140px] truncate">
+            {headerConfig.contactInfo.email}
+          </div>
+        </div>
+        
+        {/* Address */}
+        <div className="relative group">
+          <motion.button
+            onClick={() => {
+              if (headerConfig?.contactInfo?.address) {
+                window.open(`https://www.google.com/maps/search/${encodeURIComponent(headerConfig.contactInfo.address)}`, '_blank');
+              }
+            }}
+            className="p-1.5 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Our address"
+          >
+            <FiMapPin size={16} />
+          </motion.button>
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap max-w-[160px] truncate">
+            {headerConfig.contactInfo.address}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+      <hr className="border-gray-200" />
+
+      {/* Main Header */}
+      <header
+        className={`sticky top-0 z-50 w-full bg-gradient-to-b from-white to-gray-50 transition-all duration-300 ${scrolled ? 'shadow-sm' : ''}`}
+        aria-label="Main header"
+      >
+        <div className="max-w-7xl mx-auto px-2 xs:px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-12 xs:h-14 sm:h-16">
+            {/* Left: logo + mobile hamburger */}
+            <div className="flex items-center gap-1 xs:gap-2 sm:gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsMenuOpen((s) => !s)}
+                className="p-1.5 xs:p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isMenuOpen}
+              >
+                {isMenuOpen ? (
+                  <GridCloseIcon size={showMinimalUI ? 18 : 20} className="text-black" />
+                ) : (
+                  <GridIcon size={showMinimalUI ? 18 : 20} className="text-black" />
+                )}
+              </motion.button>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Link to="/" className="flex items-center gap-1 xs:gap-2" aria-label="Go to homepage">
+                  <div className="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-full bg-black flex items-center justify-center shadow-md">
+                    <HiOutlineShoppingBag className="text-white" size={showMinimalUI ? 16 : 18} />
+                  </div>
+                  {windowWidth >= 350 && (
+                    <span className="text-base xs:text-lg sm:text-xl font-bold text-black tracking-tight">Navira</span>
+                  )}
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Center: Desktop nav + search */}
+            {showFullNav && (
+              <div className="flex items-center justify-center flex-1 px-4">
+                <motion.nav
+                  className="flex items-center gap-6 lg:gap-8"
+                  aria-label="Primary"
+                  initial="hidden"
+                  animate="visible"
+                  variants={navList}
+                >
+                  {[
+                    { to: '/', icon: FiHome, label: 'Home' },
+                    { to: '/shop', icon: FiShoppingBag, label: 'Shop' },
+                    { to: '/about', icon: FiInfo, label: 'About' },
+                    { to: '/contact', icon: FiMail, label: 'Contact' }
+                  ].map(({ to, icon: Icon, label }) => (
+                    <motion.div key={to} variants={navItem} whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
+                      <Link
+                        to={to}
+                        className="flex items-center gap-1.5 text-sm font-medium text-black hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300 px-2 py-1 rounded-md"
+                      >
+                        <Icon size={16} /> {label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </motion.nav>
+
+                {/* Search (desktop) */}
+                
+              </div>
+            )}
+
+            {/* Right actions */}
+            <div className="flex items-center gap-1 xs:gap-2 sm:gap-3">
+              {/* Search icon (mobile) */}
+              {!showFullNav && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-1.5 xs:p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                  onClick={() => setIsSearchOpen(true)}
+                  aria-label="Open search"
+                >
+                  <FiSearch size={showMinimalUI ? 18 : 20} className="text-black" />
+                </motion.button>
+              )}
+
+              {/* Wishlist */}
+              <Link
+                to="/wishlist"
+                className="p-1.5 xs:p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                aria-label="Wishlist"
+              >
+                <FiHeart size={showMinimalUI ? 18 : 20} className="text-black hover:text-gray-900" />
+              </Link>
+
+              {/* Cart with badge */}
+              <Link
+                to="/cart"
+                className="relative p-1.5 xs:p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                aria-label="Cart"
+              >
+                <FiShoppingCart size={showMinimalUI ? 18 : 20} className="text-black hover:text-gray-900" />
+                {cartCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 600, damping: 15 }}
+                    className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-4 w-4 xs:h-5 xs:w-5 flex items-center justify-center shadow-sm"
+                    aria-live="polite"
+                    aria-label={`${cartCount} items in cart`}
+                  >
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </motion.span>
+                )}
+              </Link>
+
+              {/* User dropdown / auth links */}
+              {user ? (
+                windowWidth >= 475 && (
+                  <div className="relative">
+                    <motion.button
+                      ref={accountBtnRef}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setIsAccountOpen((s) => !s)}
+                      className="hidden sm:flex items-center gap-1.5 xs:gap-2 px-2 xs:px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                      aria-label="User menu"
+                      aria-haspopup="true"
+                      aria-expanded={isAccountOpen}
+                    >
+                      <FiUser size={showMinimalUI ? 16 : 18} className="text-black hover:text-gray-900" />
+                      {windowWidth >= 768 && (
+                        <>
+                          <span className="text-sm font-medium text-black">{user.name || 'Account'}</span>
+                          <FiChevronDown size={14} className="text-gray-500" />
+                        </>
+                      )}
+                    </motion.button>
+
+                    <AnimatePresence>
+                      {isAccountOpen && (
+                        <motion.div
+                          ref={accountDropdownRef}
+                          className="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-gray-200 shadow-lg py-1.5 z-50"
+                          initial="hidden"
+                          animate="visible"
+                          exit="hidden"
+                          variants={dropdownVariants}
+                          role="menu"
+                          aria-label="Account menu"
+                        >
+                          {[
+                            { to: '/account', label: 'My Account' },
+                            { to: '/orders', label: 'Orders' }
+                          ].map(({ to, label }) => (
+                            <Link
+                              key={to}
+                              to={to}
+                              onClick={() => setIsAccountOpen(false)}
+                              className="block px-4 py-2 text-sm text-black hover:bg-gray-50 hover:text-gray-900 transition-all duration-300"
+                              role="menuitem"
+                            >
+                              {label}
+                            </Link>
+                          ))}
+                          <button
+                            onClick={handleLogout}
+                            className="w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-50 hover:text-gray-900 transition-all duration-300"
+                            role="menuitem"
+                          >
+                            Logout
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              ) : windowWidth >= 475 ? (
+                <div className="hidden sm:flex items-center gap-2 xs:gap-3">
+                  <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
+                    <Link
+                      to="/login"
+                      className="text-sm text-black hover:text-gray-900 font-medium border border-transparent hover:border-blue-500 transition-all duration-300 px-2 py-1 rounded-md"
+                    >
+                      Login
+                    </Link>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Link
+                      to="/register"
+                      className="px-3 xs:px-4 py-1.5 bg-black text-white rounded-lg text-sm font-medium shadow-md hover:bg-gray-800 border border-transparent hover:border-blue-500 transition-all duration-300"
+                    >
+                      Register
+                    </Link>
+                  </motion.div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile slide-out menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.aside
+              className="fixed inset-y-0 left-0 z-50 w-[280px] xs:w-[300px] bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg"
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={mobileMenuVariants}
+            >
+              <div className="h-12 xs:h-14 sm:h-16 flex items-center justify-between px-4 border-b border-gray-200">
+                <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2">
+                  <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-black flex items-center justify-center">
+                    <HiOutlineShoppingBag className="text-white" size={18} />
+                  </div>
+                  <span className="font-bold text-black">{headerConfig.logoText}</span>
+                </Link>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50"
+                >
+                  <GridCloseIcon size={20} className="text-black" />
+                </motion.button>
+              </div>
+
+              <motion.nav
+                className="p-4 space-y-1 overflow-y-auto h-[calc(100%-3rem)] xs:h-[calc(100%-3.5rem)] sm:h-[calc(100%-4rem)]"
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={{ visible: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}
+              >
+                {[
+                  { to: '/', icon: FiHome, label: 'Home' },
+                  { to: '/shop', icon: FiShoppingBag, label: 'Shop' },
+                  { to: '/about', icon: FiInfo, label: 'About' },
+                  { to: '/contact', icon: FiMail, label: 'Contact' }
+                ].map(({ to, icon: Icon, label }) => (
+                  <motion.div key={to} variants={navItem}>
+                    <Link
+                      to={to}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-black hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300"
+                    >
+                      <Icon size={20} /> <span className="font-medium">{label}</span>
+                    </Link>
+                  </motion.div>
+                ))}
+
+                <div className="border-t border-gray-200 mt-4 pt-4 space-y-1">
+                  {user ? (
+                    <>
+                      {[
+                        { to: '/account', icon: FiUser, label: 'Account' },
+                        { to: '/orders', icon: FiShoppingBag, label: 'Orders' }
+                      ].map(({ to, icon: Icon, label }) => (
+                        <motion.div key={to} variants={navItem}>
+                          <Link
+                            to={to}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-black hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300"
+                          >
+                            <Icon size={20} /> <span className="font-medium">{label}</span>
+                          </Link>
+                        </motion.div>
+                      ))}
+                      <motion.div variants={navItem}>
+                        <button
+                          onClick={() => { handleLogout(); setIsMenuOpen(false) }}
+                          className="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg text-black hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300"
+                        >
+                          <FiLogOut size={20} /> <span className="font-medium">Logout</span>
+                        </button>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <motion.div variants={navItem}>
+                        <Link
+                          to="/login"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-black hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300"
+                        >
+                          <FiUser size={20} /> <span className="font-medium">Login</span>
+                        </Link>
+                      </motion.div>
+                      <motion.div variants={navItem}>
+                        <Link
+                          to="/register"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-black text-white hover:bg-gray-800 border border-transparent hover:border-blue-500 transition-all duration-300"
+                        >
+                          <FiUser size={20} /> <span className="font-medium">Register</span>
+                        </Link>
+                      </motion.div>
+                    </>
+                  )}
+                </div>
+              </motion.nav>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* Mobile Search overlay */}
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-start justify-center p-3 xs:p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSearchOpen(false)}
+              aria-hidden="true"
+            >
+              <motion.form
+                onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+                className="w-full max-w-full sm:max-w-lg bg-white rounded-xl p-4 sm:p-6 shadow-2xl"
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={searchOverlayVariants}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black">
+                    <FiSearch size={20} />
+                  </span>
+                  <input
+                    ref={searchInputRef}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 pl-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                    placeholder="Search products, brands..."
+                    aria-label="Search products"
+                  />
+                </div>
+
+                <div className="mt-4 flex justify-end gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={() => setIsSearchOpen(false)}
+                    className="px-4 py-2 rounded-lg bg-gray-100 text-black hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300"
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="submit"
+                    className="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 border border-transparent hover:border-blue-500 transition-all duration-300"
+                  >
+                    Search
+                  </motion.button>
+                </div>
+              </motion.form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+    </>
+  )
+}
+
+export default Header
