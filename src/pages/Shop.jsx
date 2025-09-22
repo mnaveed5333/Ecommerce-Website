@@ -12,7 +12,7 @@ const Shop = () => {
   const [filteredProducts, setFilteredProducts] = useState(products)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  
+
   const [filters, setFilters] = useState({
     category: '',
     brand: '',
@@ -23,6 +23,14 @@ const Shop = () => {
   })
 
   const searchQuery = searchParams.get('search') || ''
+  const categoryParam = searchParams.get('category') || ''
+
+  // Initialize filters with URL parameters
+  useEffect(() => {
+    if (categoryParam) {
+      setFilters(prev => ({ ...prev, category: categoryParam }))
+    }
+  }, [categoryParam])
 
   // Filter and sort products with error handling
   useEffect(() => {
@@ -109,9 +117,9 @@ const Shop = () => {
   // Framer Motion variants
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { 
+      transition: {
         duration: 0.3,
         when: "beforeChildren",
         staggerChildren: 0.1
@@ -197,6 +205,10 @@ const Shop = () => {
               <p className="text-gray-600">
                 Search results for: <span className="text-blue-600 font-medium">"{searchQuery}"</span> - {filteredProducts.length} products found
               </p>
+            ) : categoryParam ? (
+              <p className="text-gray-600">
+                Category: <span className="text-blue-600 font-medium capitalize">{categoryParam.replace("'", "")}</span> - {filteredProducts.length} products found
+              </p>
             ) : (
               <p className="text-gray-600">
                 Discover our collection of {products.length} premium products
@@ -219,13 +231,13 @@ const Shop = () => {
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-                <button 
+                <button
                   className="lg:hidden text-gray-400 hover:text-gray-600"
                 >
                   <FiX size={20} />
                 </button>
               </div>
-              
+
               <ProductFilter
                 categories={categories}
                 brands={brands}
@@ -249,14 +261,14 @@ const Shop = () => {
               <p className="text-sm text-gray-600 mb-4 sm:mb-0">
                 Showing <span className="font-medium">{filteredProducts.length}</span> products
               </p>
-              
+
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
                   <motion.button
                     onClick={() => setViewMode('grid')}
                     className={`p-2 rounded-lg ${
-                      viewMode === 'grid' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
+                      viewMode === 'grid'
+                        ? 'bg-white text-blue-600 shadow-sm'
                         : 'text-gray-600 hover:text-blue-600'
                     } transition-colors`}
                     variants={buttonVariants}
@@ -268,8 +280,8 @@ const Shop = () => {
                   <motion.button
                     onClick={() => setViewMode('list')}
                     className={`p-2 rounded-lg ${
-                      viewMode === 'list' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
+                      viewMode === 'list'
+                        ? 'bg-white text-blue-600 shadow-sm'
                         : 'text-gray-600 hover:text-blue-600'
                     } transition-colors`}
                     variants={buttonVariants}
@@ -317,8 +329,8 @@ const Shop = () => {
                 <motion.div
                   className={`
                     grid gap-6 mb-8
-                    ${viewMode === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                    ${viewMode === 'grid'
+                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                       : 'grid-cols-1'
                     }
                   `}

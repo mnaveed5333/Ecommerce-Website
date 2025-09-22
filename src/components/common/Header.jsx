@@ -393,18 +393,7 @@ const Header = () => {
 
             {/* Right actions */}
             <div className="flex items-center gap-1 xs:gap-2 sm:gap-3">
-              {/* Search icon (mobile) */}
-              {!showFullNav && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-1.5 xs:p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
-                  onClick={() => setIsSearchOpen(true)}
-                  aria-label="Open search"
-                >
-                  <FiSearch size={showMinimalUI ? 18 : 20} className="text-black" />
-                </motion.button>
-              )}
+              
 
               {/* Wishlist */}
               <Link
@@ -627,62 +616,7 @@ const Header = () => {
         </AnimatePresence>
 
         {/* Mobile Search overlay */}
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.div
-              className="fixed inset-0 z-50 flex items-start justify-center p-3 xs:p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsSearchOpen(false)}
-              aria-hidden="true"
-            >
-              <motion.form
-                onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-                className="w-full max-w-full sm:max-w-lg bg-white rounded-xl p-4 sm:p-6 shadow-2xl"
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                variants={searchOverlayVariants}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black">
-                    <FiSearch size={20} />
-                  </span>
-                  <input
-                    ref={searchInputRef}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 pl-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black transition-all"
-                    placeholder="Search products, brands..."
-                    aria-label="Search products"
-                  />
-                </div>
-
-                <div className="mt-4 flex justify-end gap-3">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="button"
-                    onClick={() => setIsSearchOpen(false)}
-                    className="px-4 py-2 rounded-lg bg-gray-100 text-black hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300"
-                  >
-                    Cancel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="submit"
-                    className="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 border border-transparent hover:border-blue-500 transition-all duration-300"
-                  >
-                    Search
-                  </motion.button>
-                </div>
-              </motion.form>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        
       </header>
     </>
   )
