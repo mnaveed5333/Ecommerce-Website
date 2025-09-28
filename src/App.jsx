@@ -9,6 +9,7 @@ import { HeaderProvider } from './context/HeaderContext'
 import Header from './components/common/Header'
 import Footer from './components/common/Footer'
 import routes from './routes'
+import { FiMessageCircle } from 'react-icons/fi'
 
 function App() {
   return (
@@ -34,6 +35,17 @@ function App() {
                   </Routes>
                 </main>
                 <Footer />
+
+                {/* WhatsApp Floating Button */}
+                <a
+                  href="https://wa.me/923405542097"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50"
+                  aria-label="Contact us on WhatsApp"
+                >
+                  <FiMessageCircle size={24} />
+                </a>
               </div>
             </Router>
                 </HeaderProvider>

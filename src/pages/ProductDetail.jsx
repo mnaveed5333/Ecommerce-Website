@@ -47,9 +47,10 @@ const ProductDetail = () => {
     for (let i = 0; i < quantity; i++) addItem(product)
   }
 
-  const handleBuyNow = () => {
-    handleAddToCart()
-    navigate('/checkout')
+  const handleOrderOnWhatsApp = () => {
+    const message = `Hi, I want to order: ${product.title}\nQuantity: ${quantity}\nPrice: $${product.price * quantity}\n\nProduct Link: ${window.location.href}`
+    const whatsappUrl = `https://wa.me/923405542097?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
   }
 
   const handleWishlistToggle = () => {
@@ -167,12 +168,6 @@ const ProductDetail = () => {
                 className="flex-1 flex items-center justify-center gap-2 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors"
               >
                 <FiShoppingCart /> Add to Cart
-              </button>
-              <button
-                onClick={handleBuyNow}
-                className="flex-1 bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Buy Now
               </button>
             </div>
 

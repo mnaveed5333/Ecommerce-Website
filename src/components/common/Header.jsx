@@ -354,7 +354,7 @@ const Header = () => {
                     <HiOutlineShoppingBag className="text-white" size={showMinimalUI ? 16 : 18} />
                   </div>
                   {windowWidth >= 350 && (
-                    <span className="text-base xs:text-lg sm:text-xl font-bold text-black tracking-tight">Navira</span>
+                    <span className="text-base xs:text-lg sm:text-xl font-bold text-black tracking-tight">Apexium Perfume</span>
                   )}
                 </Link>
               </motion.div>
@@ -538,7 +538,7 @@ const Header = () => {
                   <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-black flex items-center justify-center">
                     <HiOutlineShoppingBag className="text-white" size={18} />
                   </div>
-                  <span className="font-bold text-black">{headerConfig.logoText}</span>
+                  <span className="font-bold text-black">Apexium Perfume</span>
                 </Link>
                 <motion.button
                   whileHover={{ scale: 1.05 }}

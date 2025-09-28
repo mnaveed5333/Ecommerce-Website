@@ -173,19 +173,19 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
           </div>
 
           {/* CTA Add to Cart */}
-          <motion.button
-            onClick={handleAddToCart}
-            className="w-full flex items-center justify-center space-x-1.5 
-            bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-2.5 px-4 
-            rounded-lg text-sm font-medium shadow-md hover:shadow-lg 
-            transition-all duration-300"
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-          >
-            <FiShoppingCart size={14} />
-            <span>Add</span>
-          </motion.button>
+           <motion.button
+             onClick={handleAddToCart}
+             className="w-full flex items-center justify-center space-x-1.5
+             bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-2.5 px-4
+             rounded-lg text-sm font-medium shadow-md hover:shadow-lg
+             transition-all duration-300"
+             variants={buttonVariants}
+             whileHover="hover"
+             whileTap="tap"
+           >
+             <FiShoppingCart size={14} />
+             <span>Add</span>
+           </motion.button>
         </div>
       </Link>
     </motion.div>

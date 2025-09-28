@@ -10,51 +10,25 @@ import PaymentForm from '../components/checkout/PaymentForm'
 import OrderSummary from '../components/checkout/OrderSummary'
 
 const Checkout = () => {
-  const [step, setStep] = useState(1)
-  const [shippingData, setShippingData] = useState(null)
-  const [paymentData, setPaymentData] = useState(null)
-  const [hasStartedCheckout, setHasStartedCheckout] = useState(false)
-
   const { items, clearCart, getCartTotal } = useCart()
-  const { createOrder } = useOrder()
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  // Only check for empty cart on initial mount, not during checkout process
+  // Check for empty cart
   useEffect(() => {
-    if (items.length === 0 && !hasStartedCheckout) {
+    if (items.length === 0) {
       navigate('/cart')
     }
-  }, [items.length, hasStartedCheckout, navigate])
+  }, [items.length, navigate])
 
-  const handleShippingSubmit = (data) => {
-    setShippingData(data)
-    setStep(2)
-    setHasStartedCheckout(true)
-  }
-
-  const handlePaymentSubmit = async (data) => {
-    setPaymentData(data)
-
-    // Create order
-    const order = {
-      items,
-      shippingAddress: shippingData,
-      paymentMethod: data,
-      total: getCartTotal(),
-      subtotal: getCartTotal(),
-      shipping: getCartTotal() > 50 ? 0 : 5.99,
-      tax: getCartTotal() * 0.08
-    }
-
-    try {
-      await createOrder(order)
-      clearCart()
-      // Fixed navigation path to match route definition
-      navigate('/order-confirmation', { state: { order } })
-    } catch (error) {
-      console.error('Failed to create order:', error)
-    }
+  const handleWhatsAppOrder = () => {
+    const orderDetails = items.map(item => `${item.title} (x${item.quantity}) - $${item.price * item.quantity}`).join('\n')
+    const total = getCartTotal()
+    const message = `Hi, I want to place an order:\n\n${orderDetails}\n\nTotal: $${total}\n\nPlease confirm my order.`
+    const whatsappUrl = `https://wa.me/923405542097?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+    // Optionally clear cart after ordering
+    // clearCart()
   }
 
   // Framer Motion variants for animations
@@ -73,96 +47,65 @@ const Checkout = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          Checkout
+          Complete Your Order
         </motion.h1>
 
-        {/* Progress Steps */}
-        <div className="mb-8 sm:mb-12">
-          <div className="flex items-center justify-center space-x-4 sm:space-x-8">
-            <motion.div
-              className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
-                step >= 1 ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300'
-              }`}>
-                1
-              </div>
-              <span className="ml-2 text-sm sm:text-base">Shipping</span>
-            </motion.div>
-
-            <div className={`w-16 sm:w-24 h-0.5 ${step >= 2 ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
-
-            <motion.div
-              className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
-                step >= 2 ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300'
-              }`}>
-                2
-              </div>
-              <span className="ml-2 text-sm sm:text-base">Payment</span>
-            </motion.div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
-          <div className="lg:col-span-2">
-            <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div
-                  key="shipping"
-                  className="bg-white rounded-xl shadow-lg p-6 sm:p-8"
-                  variants={stepVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Shipping Information</h2>
-                  <ShippingForm
-                    onSubmit={handleShippingSubmit}
-                    initialData={user ? {
-                      firstName: user.name?.split(' ')[0],
-                      lastName: user.name?.split(' ')[1],
-                      email: user.email
-                    } : {}}
-                  />
-                </motion.div>
-              )}
-
-              {step === 2 && (
-                <motion.div
-                  key="payment"
-                  className="bg-white rounded-xl shadow-lg p-6 sm:p-8"
-                  variants={stepVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Payment Method</h2>
-                  <PaymentForm onSubmit={handlePaymentSubmit} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Order Summary */}
           <motion.div
-            className="lg:col-span-1"
+            className="bg-white rounded-xl shadow-lg p-6 sm:p-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+            <div className="space-y-4">
+              {items.map((item, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-16 h-16 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{item.title}</h3>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    <p className="text-sm font-medium text-gray-900">${item.price * item.quantity}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="border-t pt-4 mt-6">
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total:</span>
+                <span>${getCartTotal()}</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* WhatsApp Order */}
+          <motion.div
+            className="bg-white rounded-xl shadow-lg p-6 sm:p-8 flex flex-col justify-center items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <OrderSummary
-              shippingAddress={shippingData}
-              paymentMethod={paymentData}
-            />
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Ready to Order?</h2>
+            <p className="text-gray-600 text-center mb-6">
+              Click below to complete your order via WhatsApp. We'll confirm your details and process your order.
+            </p>
+            <motion.button
+              onClick={handleWhatsAppOrder}
+              className="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FiCheckCircle size={24} />
+              Complete Order on WhatsApp
+            </motion.button>
+            <p className="text-xs text-gray-500 mt-4 text-center">
+              You'll be redirected to WhatsApp to finalize your order
+            </p>
           </motion.div>
         </div>
       </div>
