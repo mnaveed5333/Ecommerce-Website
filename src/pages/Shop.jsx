@@ -43,10 +43,10 @@ const Shop = () => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         result = result.filter(product =>
-          product.name.toLowerCase().includes(query) ||
+          product.title.toLowerCase().includes(query) ||
           (product.description && product.description.toLowerCase().includes(query)) ||
           product.category.toLowerCase().includes(query) ||
-          product.brand.toLowerCase().includes(query)
+          (product.brand && product.brand.toLowerCase().includes(query))
         )
       }
 

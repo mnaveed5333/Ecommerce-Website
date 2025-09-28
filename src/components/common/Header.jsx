@@ -13,7 +13,8 @@ import {
   FiLogOut,
   FiPhone,
   FiMapPin,
-  FiChevronDown
+  FiChevronDown,
+  FiX
 } from 'react-icons/fi'
 import { HiOutlineShoppingBag } from 'react-icons/hi'
 import { useAuth } from '../../context/AuthContext'
@@ -359,41 +360,53 @@ const Header = () => {
               </motion.div>
             </div>
 
-            {/* Center: Desktop nav + search */}
+            {/* Center: Desktop search */}
             {showFullNav && (
               <div className="flex items-center justify-center flex-1 px-4">
-                <motion.nav
-                  className="flex items-center gap-6 lg:gap-8"
-                  aria-label="Primary"
-                  initial="hidden"
-                  animate="visible"
-                  variants={navList}
-                >
-                  {[
-                    { to: '/', icon: FiHome, label: 'Home' },
-                    { to: '/shop', icon: FiShoppingBag, label: 'Shop' },
-                    { to: '/about', icon: FiInfo, label: 'About' },
-                    { to: '/contact', icon: FiMail, label: 'Contact' }
-                  ].map(({ to, icon: Icon, label }) => (
-                    <motion.div key={to} variants={navItem} whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
-                      <Link
-                        to={to}
-                        className="flex items-center gap-1.5 text-sm font-medium text-black hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:border-blue-500 transition-all duration-300 px-2 py-1 rounded-md"
-                      >
-                        <Icon size={16} /> {label}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </motion.nav>
-
                 {/* Search (desktop) */}
-                
+                <motion.form
+                  onSubmit={handleSearch}
+                  className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm hover:shadow-md transition-shadow max-w-md w-full"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <FiSearch className="text-gray-400 mr-2" size={18} />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
+                  />
+                  <motion.button
+                    type="submit"
+                    className="ml-2 p-1 rounded-md bg-black text-white hover:bg-gray-800 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Search"
+                  >
+                    <FiSearch size={14} />
+                  </motion.button>
+                </motion.form>
               </div>
             )}
 
             {/* Right actions */}
             <div className="flex items-center gap-1 xs:gap-2 sm:gap-3">
-              
+
+              {/* Search button (mobile) */}
+              {!showFullNav && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-1.5 xs:p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                  aria-label="Search"
+                >
+                  <FiSearch size={showMinimalUI ? 18 : 20} className="text-black hover:text-gray-900" />
+                </motion.button>
+              )}
 
               {/* Wishlist */}
               <Link
@@ -616,7 +629,56 @@ const Header = () => {
         </AnimatePresence>
 
         {/* Mobile Search overlay */}
-        
+        <AnimatePresence>
+          {isSearchOpen && !showFullNav && (
+            <motion.div
+              className="fixed inset-0 z-50 bg-white flex items-center justify-center px-4"
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={searchOverlayVariants}
+            >
+              <div className="w-full max-w-md">
+                <div className="relative">
+                  <div className="flex items-center bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 shadow-sm">
+                    <FiSearch className="text-gray-400 mr-3" size={20} />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="flex-1 bg-transparent outline-none text-base text-gray-700 placeholder-gray-400"
+                      autoFocus
+                    />
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        setIsSearchOpen(false)
+                        setSearchQuery('')
+                      }}
+                      className="ml-3 p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      aria-label="Close search"
+                    >
+                      <FiX size={16} />
+                    </motion.button>
+                  </div>
+                  <motion.button
+                    onClick={handleSearch}
+                    className="w-full mt-4 bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Search
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </header>
     </>
   )

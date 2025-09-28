@@ -1,14 +1,6 @@
 ﻿﻿import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import men from "/8896469042.png"
-import women from "/image (2).png"
-import jewelary from "/76237953771.png"
-import electronics from "/image2.png"
-import img1 from "/OIP.webp"
-import img2 from "/1-12536_girls-landscape-watercolor-smiling-smooth-tee-t-shirt.png"
-import img3 from "/j_23212772_1718919475751_bg_processed.webp"
-import img4 from "/ai-generated-a-beautiful-headphone-free-png.png"
 import {
   FiShoppingBag,
   FiStar,
@@ -17,12 +9,11 @@ import {
   FiRefreshCw,
   FiArrowRight,
   FiGrid,
+  FiAward,
+  FiHeadphones,
   FiList,
   FiFilter,
-  FiChevronLeft,
-  FiChevronRight,
-  FiPlay,
-  FiPause
+  FiSearch
 } from 'react-icons/fi'
 import Header from '../components/common/Header'
 import Footer from '../components/common/Footer'
@@ -31,108 +22,43 @@ import ProductCarousel from '../components/product/ProductCarousel'
 import ProductFilter from '../components/product/ProductFilter'
 import { products, categories } from '../utils/constants'
 
-/* ----------------------------
-  heroSlides & textStyles — fixed keys for gradient styling
------------------------------ */
-const heroSlides = [
-  {
-    id: 4,
-    title: "Smart Living Starts Here",
-    subtitle: "Electronics & Gadgets",
-    description: "Explore the latest smartphones, laptops, and gadgets designed for modern life.",
-    cta: "Shop Electronics",
-    ctaLink: "/shop?category=electronics",
-    image: "https://cdni.iconscout.com/illustration/premium/thumb/gadgets-3395110-2862652.png",
-    stats: { sold: "20K+", rating: "4.9", reviews: "5.5K" },
-    style: {
-      accentFrom: "#7C3AED",
-      accentTo: "#0EA5E9",
-      textColor: "#ffffff",
-      descColor: "#E6F6FF",
-      buttonFrom: "#4338CA",
-      buttonTo: "#06B6D4",
-      buttonText: "#fff"
-    }
+// White Color Scheme Theme
+const theme = {
+  background: {
+    main: '#ffffff',
+    secondary: '#f8fafc',
+    tertiary: '#e5e7eb',
+    gradient: 'linear-gradient(152deg, #ffffff 0%, #f8fafc 50%, #e5e7eb 100%)',
+    card: 'linear-gradient(135deg, rgba(229, 231, 235, 0.6) 0%, rgba(248, 250, 252, 0.8) 100%)',
+    glass: 'rgba(255, 255, 255, 0.7)'
   },
-  {
-    id: 1,
-    title: "Style That Defines You",
-    subtitle: "Men's Exclusive Collection",
-    description: "Upgrade your wardrobe with premium outfits designed for comfort.",
-    cta: "Shop Men's",
-    ctaLink: "/shop?category=men's clothing",
-    image: men,
-    stats: { sold: "12K+", rating: "4.7", reviews: "3.2K" },
-    style: {
-      accentFrom: "#2563EB",
-      accentTo: "#06B6D4",
-      textColor: "#ffffff",
-      descColor: "#EAF8FF",
-      buttonFrom: "#1E40AF",
-      buttonTo: "#0EA5E9",
-      buttonText: "#fff"
-    }
+  accent: {
+    primary: '#0ea5e9',
+    primaryGradient: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+    secondary: '#f59e0b',
+    secondaryGradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+    highlight: '#6b7280'
   },
-  {
-    id: 2,
-    title: "Elegance Redefined",
-    subtitle: "Women's Fashion Trends",
-    description: "Discover chic styles, modern outfits, and timeless classics made for every occasion.",
-    cta: "Shop Women's",
-    ctaLink: "/shop?category=women's clothing",
-    image: women,
-    stats: { sold: "15K+", rating: "4.9", reviews: "4.1K" },
-    style: {
-      accentFrom: "#DB2777",
-      accentTo: "#A21CAF",
-      textColor: "#ffffff",
-      descColor: "#FFF0F6",
-      buttonFrom: "#BE185D",
-      buttonTo: "#8B5CF6",
-      buttonText: "#fff"
-    }
+  text: {
+    primary: '#111827',
+    secondary: '#374151',
+    muted: '#6b7280',
+    accent: '#0ea5e9'
   },
-  {
-    id: 3,
-    title: "Luxury That Shines",
-    subtitle: "Jewelry & Accessories",
-    description: "Adorn yourself with our stunning collection of jewelry crafted to perfection.",
-    cta: "Shop Jewelry",
-    ctaLink: "/shop?category=jewelery",
-    image: jewelary,
-    stats: { sold: "7K+", rating: "4.8", reviews: "2.3K" },
-    style: {
-      accentFrom: "#F59E0B",
-      accentTo: "#EF4444",
-      textColor: "#111827",
-      descColor: "#FFF7ED",
-      buttonFrom: "#D97706",
-      buttonTo: "#DC2626",
-      buttonText: "#fff"
-    }
+  border: {
+    primary: '#d1d5db',
+    glow: 'rgba(14, 165, 233, 0.3)',
+    secondary: 'rgba(245, 158, 11, 0.3)'
   }
-]
-
-// slide animation variants
-const slideVariants = {
-  enter: { x: 200, opacity: 0 },
-  center: { zIndex: 1, x: 0, opacity: 1 },
-  exit: { zIndex: 0, x: -200, opacity: 0 }
 }
 
-// section / card motion variants
-const heroVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, staggerChildren: 0.15 } } }
-const heroItemVariants = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45 } } }
-const sectionVariants = { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, staggerChildren: 0.08 } } }
-const cardVariants = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45 } } }
-const statsVariants = { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.45, type: 'spring', stiffness: 200 } } }
-
 const Home = () => {
+  const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [filteredProducts, setFilteredProducts] = useState(products)
   const [viewMode, setViewMode] = useState('grid')
   const [showFilters, setShowFilters] = useState(false)
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024)
   const [currentFilters, setCurrentFilters] = useState({
     category: '',
@@ -141,6 +67,21 @@ const Home = () => {
     inStock: false,
     onSale: false
   })
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  // Auto-change hero image every 10 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % products.length)
+    }, 10000)
+    return () => clearInterval(timer)
+  }, [])
 
   // price range
   const priceRange = { min: Math.floor(Math.min(...products.map(p => p.price))), max: Math.ceil(Math.max(...products.map(p => p.price))) }
@@ -165,270 +106,233 @@ const Home = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // autoplay carousel
-  useEffect(() => {
-    if (!isPlaying) return
-    const interval = setInterval(() => setCurrentSlide(prev => (prev + 1) % heroSlides.length), 5000)
-    return () => clearInterval(interval)
-  }, [isPlaying])
-
-  const nextSlide = () => setCurrentSlide(prev => (prev + 1) % heroSlides.length)
-  const prevSlide = () => setCurrentSlide(prev => (prev - 1 + heroSlides.length) % heroSlides.length)
-  const toggleAutoplay = () => setIsPlaying(p => !p)
-
   // derived product groups
   const featuredProducts = products.slice(0, 8)
   const bestSellers = products.filter(p => p.rating?.rate >= 4.5).slice(0, 6)
   const newArrivals = products.slice(-6)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen" style={{ background: theme.background.gradient }}>
+      
 
-      {/* HERO SLIDER (compact and responsive) */}
-      <section className="relative w-full bg-transparent overflow-hidden">
-        {/* Decorative bubbles — hide on xs to reduce clutter */}
-        <div className="hidden sm:block">
-          <div className="absolute top-8 left-6 w-14 h-14 bg-blue-100 rounded-full opacity-60 animate-float" />
-          <div className="absolute top-20 left-12 w-10 h-10 bg-indigo-100 rounded-full opacity-50 animate-float delay-700" />
-          <div className="absolute top-12 right-8 w-16 h-16 bg-purple-100 rounded-full opacity-50 animate-float delay-1000" />
-          <div className="absolute bottom-16 left-10 w-12 h-12 bg-amber-100 rounded-full opacity-60 animate-float delay-1600" />
-          <div className="absolute bottom-10 right-24 w-9 h-9 bg-teal-100 rounded-full opacity-60 animate-float delay-2500" />
+      {/* HERO SECTION */}
+      <section className="relative py-20 overflow-hidden" style={{ background: theme.background.main }}>
+        {/* Background Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 left-10 w-32 h-32 rounded-full opacity-10" style={{ background: theme.accent.primaryGradient }}></div>
+          <div className="absolute top-20 right-20 w-24 h-24 rounded-full opacity-10" style={{ background: theme.accent.secondaryGradient }}></div>
+          <div className="absolute bottom-20 left-1/4 w-40 h-40 rounded-full opacity-5" style={{ background: theme.accent.primaryGradient }}></div>
+          <div className="absolute bottom-10 right-10 w-28 h-28 rounded-full opacity-10" style={{ background: theme.accent.secondaryGradient }}></div>
         </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-14">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            {/* left card (text) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
-              className="order-2 lg:order-1 w-full max-w-xl mx-auto"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div
-                className="rounded-2xl p-6 md:p-8 shadow-2xl border"
-                style={{
-                  background: `linear-gradient(135deg, ${heroSlides[currentSlide].style.accentFrom}, ${heroSlides[currentSlide].style.accentTo})`,
-                  color: heroSlides[currentSlide].style.textColor
-                }}
-              >
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight mb-3">
-                  {heroSlides[currentSlide].title}
-                </h1>
-
-                <p className="text-sm sm:text-base md:text-lg leading-relaxed mb-5" style={{ color: heroSlides[currentSlide].style.descColor }}>
-                  {heroSlides[currentSlide].description}
-                </p>
-
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    to={heroSlides[currentSlide].ctaLink}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold shadow hover:shadow-lg transition"
-                    style={{
-                      background: `linear-gradient(90deg, ${heroSlides[currentSlide].style.buttonFrom}, ${heroSlides[currentSlide].style.buttonTo})`,
-                      color: heroSlides[currentSlide].style.buttonText
-                    }}
-                  >
-                    {heroSlides[currentSlide].cta}
-                    <FiArrowRight />
-                  </Link>
-
-                  <button
-                    onClick={() => setIsPlaying(p => !p)}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition"
-                    aria-pressed={!isPlaying}
-                  >
-                    {isPlaying ? <FiPause /> : <FiPlay />} {isPlaying ? 'Pause' : 'Play'}
-                  </button>
-                </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ color: theme.text.primary, textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                Discover Your Signature Scent
+              </h1>
+              <p className="text-xl mb-8" style={{ color: theme.text.secondary }}>
+                Luxury perfumes for every occasion. Find the perfect fragrance that defines your style.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/shop"
+                  className="inline-flex items-center px-8 py-3 font-semibold rounded-lg transition-colors"
+                  style={{ background: theme.accent.primaryGradient, color: theme.text.primary }}
+                >
+                  <FiShoppingBag className="mr-2" />
+                  Shop Now
+                </Link>
               </div>
-
-              
             </motion.div>
 
-            {/* right image (responsive) */}
+            {/* Single Product Image with Auto-Change */}
             <motion.div
-              className="order-1 lg:order-2 flex items-center justify-center"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="relative"
             >
-              <div className="w-full max-w-md">
+              <div className="relative w-full max-w-md mx-auto">
                 <AnimatePresence mode="wait">
-                  <motion.img
-                    key={currentSlide}
-                    src={heroSlides[currentSlide].image}
-                    alt={heroSlides[currentSlide].title}
-                    className="w-full h-56 sm:h-72 md:h-80 lg:h-[28rem] object-contain mx-auto"
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    loading="lazy"
-                  />
+                  <motion.div
+                    key={currentImageIndex}
+                    className="relative"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                  >
+                    <div
+                      className="aspect-square rounded-lg shadow-lg border overflow-hidden"
+                      style={{ background: theme.background.card, borderColor: theme.border.primary }}
+                    >
+                      <img
+                        src={products[currentImageIndex].image}
+                        alt={products[currentImageIndex].title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div
+                        className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"
+                      />
+                    </div>
+
+                    {/* Product Info Overlay */}
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <h3 className="text-lg font-bold mb-1 drop-shadow-lg">
+                        {products[currentImageIndex].title.split(' ').slice(0, 2).join(' ')}
+                      </h3>
+                      <p className="text-sm font-semibold drop-shadow-md" style={{ color: theme.accent.secondary }}>
+                        ${products[currentImageIndex].price}
+                      </p>
+                    </div>
+                  </motion.div>
                 </AnimatePresence>
 
-                {/* controls & indicators — responsive placement */}
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <button onClick={prevSlide} className="p-2 bg-white rounded-full shadow hover:scale-105 transition" aria-label="Previous slide"><FiChevronLeft /></button>
-                    <button onClick={toggleAutoplay} className="p-2 bg-white rounded-full shadow hover:scale-105 transition" aria-label="Toggle play">{isPlaying ? <FiPause /> : <FiPlay />}</button>
-                    <button onClick={nextSlide} className="p-2 bg-white rounded-full shadow hover:scale-105 transition" aria-label="Next slide"><FiChevronRight /></button>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {heroSlides.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setCurrentSlide(idx)}
-                        className={`w-2 h-2 rounded-full ${currentSlide === idx ? 'bg-white' : 'bg-white/40'} transition-transform`}
-                        aria-label={`Go to slide ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
+                {/* Image Navigation Dots */}
+                <div className="flex justify-center mt-4 space-x-2">
+                  {products.slice(0, 5).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentImageIndex
+                          ? 'bg-teal-500 scale-125'
+                          : 'bg-gray-300 hover:bg-teal-300'
+                      }`}
+                      aria-label={`View product ${index + 1}`}
+                    />
+                  ))}
                 </div>
+
+                {/* Auto-change Indicator */}
+                <motion.div
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full border-2 flex items-center justify-center"
+                  style={{ borderColor: theme.accent.primary }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                >
+                  <div className="w-4 h-4 rounded-full" style={{ background: theme.accent.primary }}></div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* large hero (retained your previous section but responsive) */}
-      
-
-      {/* Featured Products carousel */}
-      <motion.section className="py-12 bg-white" initial="hidden" whileInView="visible" variants={sectionVariants}>
+      {/* Featured Products */}
+      <section className="py-16" style={{ background: theme.background.secondary }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Featured Products</h2>
-            <p className="text-sm sm:text-base text-gray-600">Discover our handpicked selection</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Featured Products</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Discover our handpicked selection</p>
           </div>
-          <ProductCarousel products={featuredProducts} title="" autoPlay={true} interval={4000} />
+          <ProductCarousel products={featuredProducts} autoPlay={true} interval={4000} />
         </div>
-      </motion.section>
+      </section>
 
-      {/* Categories grid (responsive, fixed image box) */}
-<motion.section
-  className="py-12 bg-gray-50"
-  initial="hidden"
-  whileInView="visible"
-  variants={sectionVariants}
->
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="text-center mb-8">
-      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Shop by Category</h2>
-      <p className="text-sm sm:text-base text-gray-600">Find exactly what you're looking for</p>
-    </div>
+      {/* Categories */}
+      <section className="py-16" style={{ background: theme.background.main }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Shop by Category</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Find exactly what you're looking for</p>
+          </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {categories.map((category, i) => {
-        const imgs = [img1, img2, img3, img4]
-        const src = imgs[i % imgs.length]
-        return (
-          <Link
-            key={category}
-            to={`/shop?category=${encodeURIComponent(category)}`}
-            className="group block bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition"
-            aria-label={`Shop ${category}`}
-          >
-            {/* Image wrapper — uses aspect-ratio so all cards have identical image boxes */}
-            <div className="w-full bg-gray-100">
-              {/* 
-                Preferred: aspect-ratio utility (Tailwind 3+ with aspect-ratio plugin enabled)
-                - aspect-[4/3] on mobile -> slightly taller
-                - sm:aspect-[16/9] for wider screens
-                - lg:aspect-[4/3] to keep a nice square-ish card on large screens
-              */}
-              <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[4/3] overflow-hidden">
-                <img
-                  src={src}
-                  alt={category}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {categories.map((category, i) => {
+              const colors = ["#3b82f6", "#ec4899", "#10b981", "#f59e0b"]
+              const bgColor = colors[i % colors.length]
+              return (
+                <Link
+                  key={category}
+                  to={`/shop?category=${encodeURIComponent(category)}`}
+                  className="group block rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                  style={{ background: theme.background.secondary, border: `1px solid ${theme.border.primary}` }}
+                  aria-label={`Shop ${category}`}
+                >
+                  <div className="aspect-square overflow-hidden flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: bgColor, boxShadow: `0 0 20px ${bgColor}40` }}>
+                    <span className="text-white text-6xl font-bold opacity-30 transition-opacity duration-300 group-hover:opacity-50">
+                      {category.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="p-4 text-center">
+                    <h3 className="text-lg font-semibold capitalize" style={{ color: theme.text.primary }}>
+                      {category.replace("'", "")}
+                    </h3>
+                    <p className="text-sm mt-1" style={{ color: theme.text.secondary }}>
+                      {products.filter(p => p.category === category).length} products
+                    </p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </section>
 
-              {/*
-                Fallback (if you don't have the aspect-ratio utility):
-                Replace the above div with:
-                <div className="w-full h-44 sm:h-52 md:h-56 lg:h-44 overflow-hidden relative">
-                  <img className="w-full h-full object-cover ..." />
+      {/* Why Choose Us */}
+      <section className="py-16" style={{ background: theme.background.secondary }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Why Choose Apexium</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Experience luxury and quality in every bottle</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: FiAward, title: 'Premium Quality', desc: 'Authentic fragrances from renowned perfumers' },
+              { icon: FiShield, title: 'Secure Shopping', desc: 'Safe and encrypted transactions' },
+              { icon: FiTruck, title: 'Fast Delivery', desc: 'Free shipping on orders over $75' },
+              { icon: FiHeadphones, title: 'Expert Support', desc: '24/7 customer care assistance' }
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                className="text-center p-6 rounded-xl"
+                style={{ background: theme.background.card, border: `1px solid ${theme.border.primary}` }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                whileHover={{ scale: 1.05, boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
+              >
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: theme.accent.primaryGradient }}>
+                  <feature.icon className="w-8 h-8" style={{ color: theme.text.primary }} />
                 </div>
-              */}
-            </div>
-
-            <div className="p-4 text-center">
-              <h3 className="text-base font-semibold text-gray-900 capitalize">
-                {category.replace("'", "")}
-              </h3>
-              <p className="text-xs text-gray-500 mt-1">
-                {products.filter(p => p.category === category).length} products
-              </p>
-            </div>
-          </Link>
-        )
-      })}
-    </div>
-  </div>
-</motion.section>
-
+                <h3 className="text-xl font-semibold mb-2" style={{ color: theme.text.primary }}>{feature.title}</h3>
+                <p style={{ color: theme.text.secondary }}>{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Best Sellers */}
-      <motion.section className="py-12 bg-white" initial="hidden" whileInView="visible" variants={sectionVariants}>
+      <section className="py-16" style={{ background: theme.background.secondary }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Best Sellers</h2>
-            <p className="text-sm sm:text-base text-gray-600">Customer favorites</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Best Sellers</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Customer favorites</p>
           </div>
-          <ProductCarousel products={bestSellers} title="" autoPlay={false} />
+          <ProductCarousel products={bestSellers} autoPlay={false} />
         </div>
-      </motion.section>
+      </section>
 
-      
-
-      {/* New arrivals */}
-      <motion.section className="py-12 bg-white" initial="hidden" whileInView="visible" variants={sectionVariants}>
+      {/* New Arrivals */}
+      <section className="py-16" style={{ background: theme.background.main }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">New Arrivals</h2>
-            <p className="text-sm sm:text-base text-gray-600">Fresh products just added</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>New Arrivals</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Fresh products just added</p>
           </div>
-          <ProductCarousel products={newArrivals} title="" autoPlay={true} interval={3000} />
+          <ProductCarousel products={newArrivals} autoPlay={true} interval={3000} />
         </div>
-      </motion.section>
-      <motion.section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden py-12 md:py-20" initial="hidden" whileInView="visible" variants={heroVariants}>
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <motion.div variants={heroItemVariants} className="text-center lg:text-left">
-              <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-                Discover Amazing <span className="block text-yellow-300">Products</span>
-              </motion.h1>
-              <motion.p className="text-lg sm:text-xl text-blue-100 mb-6" variants={heroItemVariants}>Shop the latest trends with unbeatable prices and premium quality</motion.p>
+      </section>
 
-              <div className="flex justify-center lg:justify-start gap-4 flex-wrap">
-                <Link to="/shop" className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-bold rounded-full shadow hover:shadow-xl transition">
-                  <FiShoppingBag className="mr-2" /> Shop Now <FiArrowRight className="ml-2" />
-                </Link>
-                <Link to="/about" className="inline-flex items-center px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-blue-600 transition">
-                  Learn More
-                </Link>
-              </div>
-            </motion.div>
-
-            <motion.div className="grid grid-cols-2 gap-4" variants={heroItemVariants}>
-              {[{ icon: FiShoppingBag, number: '10K+', label: 'Products' }, { icon: FiStar, number: '50K+', label: 'Happy Customers' }, { icon: FiTruck, number: '24/7', label: 'Fast Delivery' }, { icon: FiShield, number: '100%', label: 'Secure' }].map((stat, i) => (
-                <motion.div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center" variants={statsVariants}>
-                  <stat.icon className="mx-auto mb-2 text-yellow-300" size={26} />
-                  <div className="text-lg font-bold">{stat.number}</div>
-                  <div className="text-blue-100 text-sm">{stat.label}</div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-      
     </div>
   )
 }
