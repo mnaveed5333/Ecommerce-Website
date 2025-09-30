@@ -137,8 +137,8 @@ const Header = () => {
     exit: { opacity: 0, scale: 0.98, transition: { duration: 0.15 } }
   }
 
-  // Custom 9-dot grid icon for menu
-  const GridIcon = ({ size = 24, className }) => (
+  // Custom 3-line hamburger icon for menu (all longer)
+  const HamburgerIcon = ({ size = 24, className }) => (
     <svg
       width={size}
       height={size}
@@ -150,20 +150,14 @@ const Header = () => {
       strokeLinejoin="round"
       className={className}
     >
-      <circle cx="4" cy="4" r="1.5" />
-      <circle cx="12" cy="4" r="1.5" />
-      <circle cx="20" cy="4" r="1.5" />
-      <circle cx="4" cy="12" r="1.5" />
-      <circle cx="12" cy="12" r="1.5" />
-      <circle cx="20" cy="12" r="1.5" />
-      <circle cx="4" cy="20" r="1.5" />
-      <circle cx="12" cy="20" r="1.5" />
-      <circle cx="20" cy="20" r="1.5" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
     </svg>
   )
 
-  // Custom 9-dot grid styled as close icon
-  const GridCloseIcon = ({ size = 24, className }) => (
+  // Custom close icon
+  const CloseIcon = ({ size = 24, className }) => (
     <svg
       width={size}
       height={size}
@@ -175,148 +169,13 @@ const Header = () => {
       strokeLinejoin="round"
       className={className}
     >
-      <circle cx="4" cy="4" r="1.5" />
-      <circle cx="12" cy="4" r="1.5" strokeOpacity="0.3" />
-      <circle cx="20" cy="4" r="1.5" />
-      <circle cx="4" cy="12" r="1.5" strokeOpacity="0.3" />
-      <circle cx="12" cy="12" r="1.5" />
-      <circle cx="20" cy="12" r="1.5" strokeOpacity="0.3" />
-      <circle cx="4" cy="20" r="1.5" />
-      <circle cx="12" cy="20" r="1.5" strokeOpacity="0.3" />
-      <circle cx="20" cy="20" r="1.5" />
-      <line x1="3" y1="3" x2="21" y2="21" strokeWidth="2" />
-      <line x1="21" y1="3" x2="3" y2="21" strokeWidth="2" />
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   )
 
   return (
     <>
-      {/* Top Contact Information Bar */}
-{headerConfig?.showTopBar && (
-  <div className="w-full bg-white text-black text-[10px] xs:text-xs sm:text-sm py-1.5 xs:py-2 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-    <div className="max-w-7xl mx-auto px-2 xs:px-3 sm:px-4 lg:px-8">
-      {/* Desktop/Tablet View - Always show full information */}
-      <div className="hidden sm:flex flex-row flex-wrap justify-between gap-1 xs:gap-2 sm:gap-4">
-        <motion.a
-          href={headerConfig?.contactInfo?.phone ? `tel:${headerConfig.contactInfo.phone}` : '#'}
-          className="flex items-center gap-1 xs:gap-2 group border border-transparent hover:border-blue-500 hover:bg-gray-50 transition-all duration-300 py-0.5 xs:py-1 px-1 xs:px-2 rounded-md"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.12 }}
-          aria-label="Call us"
-        >
-          <div className="bg-black p-1 xs:p-1.5 rounded-full group-hover:bg-black transition-colors">
-            <FiPhone className="text-white" size={14} />
-          </div>
-          <span className="font-medium group-hover:text-black truncate max-w-[140px] xs:max-w-[160px] sm:max-w-none">
-            {headerConfig.contactInfo.phone}
-          </span>
-        </motion.a>
-        <motion.a
-          href={headerConfig?.contactInfo?.email ? `mailto:${headerConfig.contactInfo.email}` : '#'}
-          className="flex items-center gap-1 xs:gap-2 group border border-transparent hover:border-blue-500 hover:bg-gray-50 transition-all duration-300 py-0.5 xs:py-1 px-1 xs:px-2 rounded-md"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.12 }}
-          aria-label="Email us"
-        >
-          <div className="bg-black p-1 xs:p-1.5 rounded-full group-hover:bg-black transition-colors">
-            <FiMail className="text-white" size={14} />
-          </div>
-          <span className="font-medium group-hover:text-black truncate max-w-[160px] xs:max-w-[180px] sm:max-w-none">
-            {headerConfig.contactInfo.email}
-          </span>
-        </motion.a>
-        <motion.a
-          href={
-            headerConfig?.contactInfo?.address
-              ? `https://www.google.com/maps/search/${encodeURIComponent(headerConfig.contactInfo.address)}`
-              : '#'
-          }
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 xs:gap-2 group border border-transparent hover:border-blue-500 hover:bg-gray-50 transition-all duration-300 py-0.5 xs:py-1 px-1 xs:px-2 rounded-md"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.12 }}
-          aria-label="Our address"
-        >
-          <div className="bg-black p-1 xs:p-1.5 rounded-full group-hover:bg-black transition-colors">
-            <FiMapPin className="text-white" size={14} />
-          </div>
-          <span className="font-medium group-hover:text-black truncate max-w-[180px] xs:max-w-[200px] sm:max-w-none">
-            {headerConfig.contactInfo.address}
-          </span>
-        </motion.a>
-      </div>
-      
-      {/* Mobile View - Icons only with tooltip on click */}
-      <div className="flex sm:hidden justify-center gap-4 xs:gap-6">
-        {/* Phone */}
-        <div className="relative group">
-          <motion.button
-            onClick={() => {
-              if (headerConfig?.contactInfo?.phone) {
-                window.location.href = `tel:${headerConfig.contactInfo.phone}`;
-              }
-            }}
-            className="p-1.5 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Call us"
-          >
-            <FiPhone size={16} />
-          </motion.button>
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">
-            {headerConfig.contactInfo.phone}
-          </div>
-        </div>
-        
-        {/* Email */}
-        <div className="relative group">
-          <motion.button
-            onClick={() => {
-              if (headerConfig?.contactInfo?.email) {
-                window.location.href = `mailto:${headerConfig.contactInfo.email}`;
-              }
-            }}
-            className="p-1.5 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Email us"
-          >
-            <FiMail size={16} />
-          </motion.button>
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap max-w-[140px] truncate">
-            {headerConfig.contactInfo.email}
-          </div>
-        </div>
-        
-        {/* Address */}
-        <div className="relative group">
-          <motion.button
-            onClick={() => {
-              if (headerConfig?.contactInfo?.address) {
-                window.open(`https://www.google.com/maps/search/${encodeURIComponent(headerConfig.contactInfo.address)}`, '_blank');
-              }
-            }}
-            className="p-1.5 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Our address"
-          >
-            <FiMapPin size={16} />
-          </motion.button>
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap max-w-[160px] truncate">
-            {headerConfig.contactInfo.address}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-      <hr className="border-gray-200" />
 
       {/* Main Header */}
       <header
@@ -336,9 +195,9 @@ const Header = () => {
                 aria-expanded={isMenuOpen}
               >
                 {isMenuOpen ? (
-                  <GridCloseIcon size={showMinimalUI ? 18 : 20} className="text-black" />
+                  <CloseIcon size={showMinimalUI ? 18 : 20} className="text-black" />
                 ) : (
-                  <GridIcon size={showMinimalUI ? 18 : 20} className="text-black" />
+                  <HamburgerIcon size={showMinimalUI ? 18 : 20} className="text-black" />
                 )}
               </motion.button>
 
@@ -527,7 +386,7 @@ const Header = () => {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.aside
-              className="fixed inset-y-0 left-0 z-50 w-[280px] xs:w-[300px] bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg"
+              className="fixed inset-y-0 left-0 z-50 w-[240px] xs:w-[260px] bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg"
               initial="hidden"
               animate="visible"
               exit="hidden"
@@ -546,7 +405,7 @@ const Header = () => {
                   onClick={() => setIsMenuOpen(false)}
                   className="p-2 rounded-full border border-transparent hover:border-blue-500 transition-all duration-300 hover:bg-gray-50"
                 >
-                  <GridCloseIcon size={20} className="text-black" />
+                  <CloseIcon size={20} className="text-black" />
                 </motion.button>
               </div>
 

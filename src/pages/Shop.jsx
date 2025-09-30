@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FiGrid, FiList, FiRotateCw, FiX } from 'react-icons/fi'
+import { motion } from 'framer-motion'
+import { FiGrid, FiList, FiRotateCw, FiFilter } from 'react-icons/fi'
 import ProductCard from '../components/product/ProductCard'
-import ProductFilter from '../components/product/ProductFilter'
-import { products, categories, brands } from '../utils/constants'
+import { products, categories } from '../utils/constants'
 
 const Shop = () => {
   const [searchParams] = useSearchParams()
@@ -217,193 +216,235 @@ const Shop = () => {
           </div>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Filters */}
-          <motion.div
-            className="lg:w-1/4"
-            variants={itemVariants}
-          >
-            <motion.div
-              className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 sticky top-24 max-h-[80vh] overflow-y-auto"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-                <button
-                  className="lg:hidden text-gray-400 hover:text-gray-600"
-                >
-                  <FiX size={20} />
-                </button>
-              </div>
-
-              <ProductFilter
-                categories={categories}
-                brands={brands}
-                priceRange={{ min: 0, max: 1000 }}
-                onFilterChange={handleFilterChange}
-                currentFilters={filters}
-              />
-            </motion.div>
-          </motion.div>
-
-          {/* Main Content */}
-          <motion.div
-            className="lg:w-3/4"
-            variants={itemVariants}
-          >
-            {/* Toolbar */}
-            <motion.div
-              className="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-col sm:flex-row items-center justify-between border border-gray-100"
-              variants={itemVariants}
-            >
-              <p className="text-sm text-gray-600 mb-4 sm:mb-0">
-                Showing <span className="font-medium">{filteredProducts.length}</span> products
-              </p>
-
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
-                  <motion.button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-lg ${
-                      viewMode === 'grid'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-blue-600'
-                    } transition-colors`}
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                  >
-                    <FiGrid size={18} />
-                  </motion.button>
-                  <motion.button
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-lg ${
-                      viewMode === 'list'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-blue-600'
-                    } transition-colors`}
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                  >
-                    <FiList size={18} />
-                  </motion.button>
+        {/* Top Filters */}
+        <motion.div
+          className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-6 mb-8"
+          variants={itemVariants}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                  <FiFilter className="text-white" size={16} />
                 </div>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Filters</h2>
               </div>
+
+              {/* Category Quick Filters */}
+              <div className="flex flex-wrap gap-2">
+                {categories.slice(0, 6).map(category => (
+                  <motion.button
+                    key={category}
+                    onClick={() => handleFilterChange({ ...filters, category: filters.category === category ? '' : category })}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      filters.category === category
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {category}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range Slider */}
+            <div className="flex items-center gap-4 w-full lg:w-auto">
+              <span className="text-sm font-medium text-gray-700">Price:</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={filters.minPrice}
+                  onChange={(e) => handleFilterChange({ ...filters, minPrice: e.target.value })}
+                  className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <span className="text-gray-500">-</span>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={filters.maxPrice}
+                  onChange={(e) => handleFilterChange({ ...filters, maxPrice: e.target.value })}
+                  className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Clear Filters */}
+            {Object.values(filters).some(value => value) && (
+              <motion.button
+                onClick={() => setFilters({
+                  category: '',
+                  brand: '',
+                  minPrice: '',
+                  maxPrice: '',
+                  inStock: false,
+                  onSale: false
+                })}
+                className="px-6 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-medium hover:from-red-600 hover:to-pink-600 transition-all duration-300 shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Clear All
+              </motion.button>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Toolbar */}
+        <motion.div
+          className="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-col sm:flex-row items-center justify-between border border-gray-100"
+          variants={itemVariants}
+        >
+          <p className="text-sm text-gray-600 mb-4 sm:mb-0">
+            Showing <span className="font-medium">{filteredProducts.length}</span> products
+          </p>
+
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+              <motion.button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg ${
+                  viewMode === 'grid'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-blue-600'
+                } transition-colors`}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+              >
+                <FiGrid size={18} />
+              </motion.button>
+              <motion.button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-lg ${
+                  viewMode === 'list'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-blue-600'
+                } transition-colors`}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+              >
+                <FiList size={18} />
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Products Grid */}
+        {filteredProducts.length === 0 ? (
+          <motion.div
+            className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100"
+            variants={itemVariants}
+          >
+            <div className="text-gray-300 text-6xl mb-4">🔍</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No products found
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Try adjusting your search or filter criteria to find what you're looking for.
+            </p>
+            <motion.button
+              onClick={() => setFilters({
+                category: '',
+                brand: '',
+                minPrice: '',
+                maxPrice: '',
+                inStock: false,
+                onSale: false
+              })}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+            >
+              Clear all filters
+            </motion.button>
+          </motion.div>
+        ) : (
+          <>
+            <motion.div
+              className={`
+                grid gap-6 mb-8
+                ${viewMode === 'grid'
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                  : 'grid-cols-1'
+                }
+              `}
+              variants={containerVariants}
+            >
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  variants={itemVariants}
+                  custom={index}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <ProductCard product={product} viewMode={viewMode} />
+                </motion.div>
+              ))}
             </motion.div>
 
-            {/* Products Grid */}
-            {filteredProducts.length === 0 ? (
+            {/* Pagination */}
+            {filteredProducts.length > 12 && (
               <motion.div
-                className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100"
+                className="flex justify-center"
                 variants={itemVariants}
               >
-                <div className="text-gray-300 text-6xl mb-4">🔍</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No products found
-                </h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Try adjusting your search or filter criteria to find what you're looking for.
-                </p>
-                <motion.button
-                  onClick={() => setFilters({
-                    category: '',
-                    brand: '',
-                    minPrice: '',
-                    maxPrice: '',
-                    inStock: false,
-                    onSale: false
-                  })}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  Clear all filters
-                </motion.button>
-              </motion.div>
-            ) : (
-              <>
-                <motion.div
-                  className={`
-                    grid gap-6 mb-8
-                    ${viewMode === 'grid'
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                      : 'grid-cols-1'
-                    }
-                  `}
-                  variants={containerVariants}
-                >
-                  {filteredProducts.map((product, index) => (
-                    <motion.div
-                      key={product.id}
-                      variants={itemVariants}
-                      custom={index}
-                      initial="hidden"
-                      animate="visible"
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <ProductCard product={product} viewMode={viewMode} />
-                    </motion.div>
-                  ))}
-                </motion.div>
-
-                {/* Pagination */}
-                {filteredProducts.length > 12 && (
-                  <motion.div
-                    className="flex justify-center"
-                    variants={itemVariants}
+                <nav className="flex items-center space-x-2">
+                  <motion.button
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
                   >
-                    <nav className="flex items-center space-x-2">
-                      <motion.button
-                        className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        Previous
-                      </motion.button>
-                      <motion.button
-                        className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        1
-                      </motion.button>
-                      <motion.button
-                        className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        2
-                      </motion.button>
-                      <motion.button
-                        className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        3
-                      </motion.button>
-                      <motion.button
-                        className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        Next
-                      </motion.button>
-                    </nav>
-                  </motion.div>
-                )}
-              </>
+                    Previous
+                  </motion.button>
+                  <motion.button
+                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                  >
+                    1
+                  </motion.button>
+                  <motion.button
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                  >
+                    2
+                  </motion.button>
+                  <motion.button
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                  >
+                    3
+                  </motion.button>
+                  <motion.button
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                  >
+                    Next
+                  </motion.button>
+                </nav>
+              </motion.div>
             )}
-          </motion.div>
-        </div>
+          </>
+        )}
       </div>
     </motion.div>
   )

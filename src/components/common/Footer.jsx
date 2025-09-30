@@ -30,7 +30,7 @@ const Footer = () => {
             animate="visible"
             variants={sectionVariants}
           >
-            <h3 className="text-xl font-bold mb-4 text-gray-900">Navira</h3>
+            <h3 className="text-xl font-bold mb-4 text-gray-900">Apexium</h3>
             <p className="text-gray-600 mb-4 text-sm leading-relaxed">
               Your one-stop shop for all your needs. We offer quality products at affordable prices.
             </p>
@@ -151,7 +151,7 @@ const Footer = () => {
           transition={{ duration: 0.4, delay: 0.2 }}
         >
           <p className="text-gray-600 text-sm">
-            © {new Date().getFullYear()} EcomStore. All rights reserved.
+            © {new Date().getFullYear()} Apexium Perfume. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             {[

@@ -59,8 +59,8 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
 
   return (
     <motion.div
-      className={`group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl 
-      transition-all duration-500 bg-white border border-slate-200 
+      className={`group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl
+      transition-all duration-500 bg-white border border-slate-200
       ${viewMode === 'list' ? 'flex flex-row' : ''}`}
       variants={cardVariants}
       initial="hidden"
@@ -70,8 +70,8 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       <Link to={`/product/${product.id}`} className="block w-full h-full">
         {/* Image Section */}
         <div
-          className={`relative overflow-hidden 
-          ${viewMode === 'list' ? 'w-32 h-32 flex-shrink-0' : 'w-full h-56'}`}
+          className={`relative overflow-hidden
+          ${viewMode === 'list' ? 'w-32 h-32 flex-shrink-0' : 'w-full h-40 md:h-56'}`}
         >
           {!imageLoaded && (
             <div className="absolute inset-0 bg-slate-200 animate-pulse" />
@@ -142,6 +142,16 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
             {product.title}
           </motion.h3>
 
+          {/* Short Description */}
+          {product.description && (
+            <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+              {product.description.length > 80
+                ? `${product.description.substring(0, 80)}...`
+                : product.description
+              }
+            </p>
+          )}
+
           {/* Price & Rating */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
@@ -173,19 +183,19 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
           </div>
 
           {/* CTA Add to Cart */}
-           <motion.button
-             onClick={handleAddToCart}
-             className="w-full flex items-center justify-center space-x-1.5
-             bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-2.5 px-4
-             rounded-lg text-sm font-medium shadow-md hover:shadow-lg
-             transition-all duration-300"
-             variants={buttonVariants}
-             whileHover="hover"
-             whileTap="tap"
-           >
-             <FiShoppingCart size={14} />
-             <span>Add</span>
-           </motion.button>
+          <motion.button
+            onClick={handleAddToCart}
+            className="w-full flex items-center justify-center space-x-1.5
+            bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-2.5 px-4
+            rounded-lg text-sm font-medium shadow-md hover:shadow-lg
+            transition-all duration-300"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <FiShoppingCart size={14} />
+            <span>Add</span>
+          </motion.button>
         </div>
       </Link>
     </motion.div>

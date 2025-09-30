@@ -115,115 +115,20 @@ const Home = () => {
     <div className="min-h-screen" style={{ background: theme.background.gradient }}>
       
 
-      {/* HERO SECTION */}
-      <section className="relative py-20 overflow-hidden" style={{ background: theme.background.main }}>
-        {/* Background Decorative Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-32 h-32 rounded-full opacity-10" style={{ background: theme.accent.primaryGradient }}></div>
-          <div className="absolute top-20 right-20 w-24 h-24 rounded-full opacity-10" style={{ background: theme.accent.secondaryGradient }}></div>
-          <div className="absolute bottom-20 left-1/4 w-40 h-40 rounded-full opacity-5" style={{ background: theme.accent.primaryGradient }}></div>
-          <div className="absolute bottom-10 right-10 w-28 h-28 rounded-full opacity-10" style={{ background: theme.accent.secondaryGradient }}></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ color: theme.text.primary, textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                Discover Your Signature Scent
-              </h1>
-              <p className="text-xl mb-8" style={{ color: theme.text.secondary }}>
-                Luxury perfumes for every occasion. Find the perfect fragrance that defines your style.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/shop"
-                  className="inline-flex items-center px-8 py-3 font-semibold rounded-lg transition-colors"
-                  style={{ background: theme.accent.primaryGradient, color: theme.text.primary }}
-                >
-                  <FiShoppingBag className="mr-2" />
-                  Shop Now
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* Single Product Image with Auto-Change */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="relative"
-            >
-              <div className="relative w-full max-w-md mx-auto">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentImageIndex}
-                    className="relative"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                  >
-                    <div
-                      className="aspect-square rounded-lg shadow-lg border overflow-hidden"
-                      style={{ background: theme.background.card, borderColor: theme.border.primary }}
-                    >
-                      <img
-                        src={products[currentImageIndex].image}
-                        alt={products[currentImageIndex].title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                      <div
-                        className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"
-                      />
-                    </div>
-
-                    {/* Product Info Overlay */}
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h3 className="text-lg font-bold mb-1 drop-shadow-lg">
-                        {products[currentImageIndex].title.split(' ').slice(0, 2).join(' ')}
-                      </h3>
-                      <p className="text-sm font-semibold drop-shadow-md" style={{ color: theme.accent.secondary }}>
-                        ${products[currentImageIndex].price}
-                      </p>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Image Navigation Dots */}
-                <div className="flex justify-center mt-4 space-x-2">
-                  {products.slice(0, 5).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === currentImageIndex
-                          ? 'bg-teal-500 scale-125'
-                          : 'bg-gray-300 hover:bg-teal-300'
-                      }`}
-                      aria-label={`View product ${index + 1}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Auto-change Indicator */}
-                <motion.div
-                  className="absolute top-4 right-4 w-8 h-8 rounded-full border-2 flex items-center justify-center"
-                  style={{ borderColor: theme.accent.primary }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                >
-                  <div className="w-4 h-4 rounded-full" style={{ background: theme.accent.primary }}></div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+      {/* ACURA NEW PRODUCT HERO */}
+      <section className="relative w-full">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <img
+            src="/Acura-New-Products-Banner-Perfume-Hut-.jpg"
+            alt="Acura New Products Banner"
+            className="w-full h-auto object-cover"
+            loading="lazy"
+          />
+        </motion.div>
       </section>
 
       {/* Featured Products */}

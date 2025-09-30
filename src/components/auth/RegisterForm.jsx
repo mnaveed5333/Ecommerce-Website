@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaGoogle, FaFacebookF, FaCheck } from 'react-icons/fa'
+import { FaGoogle, FaFacebookF, FaCheck, FaSpinner } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
 
 const RegisterForm = () => {
