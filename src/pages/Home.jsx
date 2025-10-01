@@ -142,46 +142,30 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-16" style={{ background: theme.background.main }}>
+
+      
+
+      {/* Best Sellers */}
+      <section className="py-16" style={{ background: theme.background.secondary }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Shop by Category</h2>
-            <p className="text-lg" style={{ color: theme.text.secondary }}>Find exactly what you're looking for</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Best Sellers</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Customer favorites</p>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {categories.map((category, i) => {
-              const colors = ["#3b82f6", "#ec4899", "#10b981", "#f59e0b"]
-              const bgColor = colors[i % colors.length]
-              return (
-                <Link
-                  key={category}
-                  to={`/shop?category=${encodeURIComponent(category)}`}
-                  className="group block rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
-                  style={{ background: theme.background.secondary, border: `1px solid ${theme.border.primary}` }}
-                  aria-label={`Shop ${category}`}
-                >
-                  <div className="aspect-square overflow-hidden flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: bgColor, boxShadow: `0 0 20px ${bgColor}40` }}>
-                    <span className="text-white text-6xl font-bold opacity-30 transition-opacity duration-300 group-hover:opacity-50">
-                      {category.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="p-4 text-center">
-                    <h3 className="text-lg font-semibold capitalize" style={{ color: theme.text.primary }}>
-                      {category.replace("'", "")}
-                    </h3>
-                    <p className="text-sm mt-1" style={{ color: theme.text.secondary }}>
-                      {products.filter(p => p.category === category).length} products
-                    </p>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
+          <ProductCarousel products={bestSellers} autoPlay={false} />
         </div>
       </section>
 
+      {/* New Arrivals */}
+      <section className="py-16" style={{ background: theme.background.main }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>New Arrivals</h2>
+            <p className="text-lg" style={{ color: theme.text.secondary }}>Fresh products just added</p>
+          </div>
+          <ProductCarousel products={newArrivals} autoPlay={true} interval={3000} />
+        </div>
+      </section>
       {/* Why Choose Us */}
       <section className="py-16" style={{ background: theme.background.secondary }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,29 +199,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Best Sellers */}
-      <section className="py-16" style={{ background: theme.background.secondary }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>Best Sellers</h2>
-            <p className="text-lg" style={{ color: theme.text.secondary }}>Customer favorites</p>
-          </div>
-          <ProductCarousel products={bestSellers} autoPlay={false} />
-        </div>
-      </section>
-
-      {/* New Arrivals */}
-      <section className="py-16" style={{ background: theme.background.main }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: theme.text.primary }}>New Arrivals</h2>
-            <p className="text-lg" style={{ color: theme.text.secondary }}>Fresh products just added</p>
-          </div>
-          <ProductCarousel products={newArrivals} autoPlay={true} interval={3000} />
-        </div>
-      </section>
-
     </div>
   )
 }

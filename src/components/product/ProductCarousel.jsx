@@ -19,11 +19,7 @@ const ProductCarousel = ({ products, title, autoPlay = true, interval = 5000 }) 
   // Responsive slidesToShow based on window width
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth
-      if (width < 640) setSlidesToShow(1)
-      else if (width < 768) setSlidesToShow(2)
-      else if (width < 1024) setSlidesToShow(3)
-      else setSlidesToShow(4)
+      setSlidesToShow(2)
     }
     handleResize()
     window.addEventListener('resize', handleResize)

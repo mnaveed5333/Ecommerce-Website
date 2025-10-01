@@ -9,7 +9,8 @@ import { HeaderProvider } from './context/HeaderContext'
 import Header from './components/common/Header'
 import Footer from './components/common/Footer'
 import routes from './routes'
-import { FiMessageCircle, FiArrowUp } from 'react-icons/fi'
+import { FiArrowUp } from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa'
 
 function App() {
   return (
@@ -53,7 +54,7 @@ function App() {
                   className="fixed bottom-4 right-4 md:bottom-6 md:right-6 bg-green-500 hover:bg-green-600 text-white p-3 md:p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50"
                   aria-label="Contact us on WhatsApp"
                 >
-                  <FiMessageCircle size={20} className="md:w-6 md:h-6" />
+                  <FaWhatsapp size={20} className="md:w-6 md:h-6" />
                 </a>
               </div>
             </Router>
