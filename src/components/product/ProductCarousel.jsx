@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import ProductCard from './ProductCard'
 
 const ProductCarousel = ({ products, title, autoPlay = true, interval = 5000 }) => {
@@ -90,11 +89,6 @@ const ProductCarousel = ({ products, title, autoPlay = true, interval = 5000 }) 
     exit: { x: '-100%', opacity: 0 }
   }
 
-  const buttonVariants = {
-    hover: { scale: 1.15, backgroundColor: '#14B8A6', rotate: 3, boxShadow: '0 8px 24px rgba(20, 184, 166, 0.3)' },
-    tap: { scale: 0.85, rotate: -3 }
-  }
-
   const dotVariants = {
     active: { scale: 1.3, backgroundColor: '#14B8A6', boxShadow: '0 0 8px rgba(20, 184, 166, 0.5)' },
     inactive: { scale: 1, backgroundColor: '#D1D5DB' }
@@ -142,32 +136,6 @@ const ProductCarousel = ({ products, title, autoPlay = true, interval = 5000 }) 
             ))}
           </motion.div>
         </AnimatePresence>
-        
-        {/* Navigation Buttons (hidden if not enough products) */}
-        {products.length > slidesToShow && (
-          <>
-            <motion.button
-              onClick={prevSlide}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 transition-all z-10"
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              aria-label="Previous slide"
-            >
-              <FiChevronLeft size={24} />
-            </motion.button>
-            <motion.button
-              onClick={nextSlide}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 transition-all z-10"
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              aria-label="Next slide"
-            >
-              <FiChevronRight size={24} />
-            </motion.button>
-          </>
-        )}
       </div>
       
       {/* Progress Bar for Auto-Play */}

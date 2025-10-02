@@ -71,7 +71,7 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
         {/* Image Section */}
         <div
           className={`relative overflow-hidden
-          ${viewMode === 'list' ? 'w-32 h-32 flex-shrink-0' : 'w-full h-40 md:h-56'}`}
+          ${viewMode === 'list' ? 'w-32 h-32 flex-shrink-0' : 'w-28 h-28 md:w-full md:h-56'}`}
         >
           {!imageLoaded && (
             <div className="absolute inset-0 bg-slate-200 animate-pulse" />
