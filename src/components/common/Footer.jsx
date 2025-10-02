@@ -23,7 +23,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-50 z-1 text-gray-900 mt-auto">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Company Info */}
           <motion.div
             initial="hidden"
@@ -115,33 +115,8 @@ const Footer = () => {
           </motion.div>
 
           {/* Newsletter */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={sectionVariants}
-          >
-            <h4 className="text-lg font-semibold mb-4 text-gray-900">Newsletter</h4>
-            <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-              Subscribe to our newsletter for updates on new products and special offers.
-            </p>
-            <form className="flex flex-col space-y-3">
-              <motion.input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900 text-sm"
-                whileFocus={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              />
-              <motion.button
-                type="submit"
-                className="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-medium hover:bg-indigo-600 transition-colors shadow-md"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Subscribe
-              </motion.button>
-            </form>
-          </motion.div>
+          
+
         </div>
 
         <motion.div
